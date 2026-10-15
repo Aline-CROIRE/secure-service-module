@@ -1,6 +1,9 @@
 """User registration and authentication service."""
 
-from secure_service.exceptions import UserAlreadyExistsError
+from secure_service.exceptions import (
+    InvalidPasswordError,
+    UserAlreadyExistsError,
+)
 from secure_service.interfaces import PasswordHasher, UserRepository
 from secure_service.models import User
 
@@ -13,28 +16,15 @@ class UserService:
         repository: UserRepository,
         hasher: PasswordHasher,
     ) -> None:
-        """Initialize the service with injected dependencies.
-
-        Args:
-            repository: Storage implementation for user records.
-            hasher: Implementation responsible for password hashing.
-        """
+        """Initialize the service with injected dependencies."""
         self.repository = repository
         self.hasher = hasher
 
     def register(self, username: str, password: str) -> User:
-        """Register a user after checking for duplicate usernames.
+        """Register a user after validating the password and username."""
+        if len(password) < 8:
+            raise InvalidPasswordError("Password must contain at least 8 characters.")
 
-        Args:
-            username: Unique username for the new user.
-            password: Plaintext password to hash before storage.
-
-        Returns:
-            The newly created user record.
-
-        Raises:
-            UserAlreadyExistsError: If the username is already registered.
-        """
         existing_user = self.repository.get_by_username(username)
         if existing_user is not None:
             raise UserAlreadyExistsError(
