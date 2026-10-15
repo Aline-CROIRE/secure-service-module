@@ -1,0 +1,9 @@
+[run]
+branch = True
+source = secure_service
+relative_files = True
+
+[report]
+show_missing = True
+skip_covered = False
+fail_under = 100

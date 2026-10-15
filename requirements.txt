@@ -1,0 +1,9 @@
+bcrypt
+pytest
+pytest-mock
+pytest-cov
+coverage
+ruff
+black
+mypy
+pre-commit
