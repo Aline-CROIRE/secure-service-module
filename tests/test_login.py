@@ -1,4 +1,3 @@
-
 """Tests for user authentication."""
 
 from unittest.mock import Mock
