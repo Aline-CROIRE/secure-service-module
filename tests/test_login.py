@@ -1,7 +1,5 @@
 """Tests for user authentication."""
 
-from unittest.mock import Mock
-
 import pytest
 
 from secure_service.exceptions import InvalidPasswordError, UserNotFoundError
@@ -9,9 +7,9 @@ from secure_service.models import User
 from secure_service.service import UserService
 
 
-def test_login_returns_user_when_password_is_correct() -> None:
-    repository = Mock()
-    hasher = Mock()
+def test_login_returns_user_when_password_is_correct(mocker) -> None:
+    repository = mocker.Mock()
+    hasher = mocker.Mock()
 
     user = User(username="aline", password_hash="stored-hash")
     repository.get_by_username.return_value = user
@@ -32,9 +30,9 @@ def test_login_returns_user_when_password_is_correct() -> None:
     )
 
 
-def test_login_rejects_unknown_username() -> None:
-    repository = Mock()
-    hasher = Mock()
+def test_login_rejects_unknown_username(mocker) -> None:
+    repository = mocker.Mock()
+    hasher = mocker.Mock()
     repository.get_by_username.return_value = None
 
     service = UserService(repository=repository, hasher=hasher)
@@ -45,9 +43,9 @@ def test_login_rejects_unknown_username() -> None:
     hasher.verify_password.assert_not_called()
 
 
-def test_login_rejects_incorrect_password() -> None:
-    repository = Mock()
-    hasher = Mock()
+def test_login_rejects_incorrect_password(mocker) -> None:
+    repository = mocker.Mock()
+    hasher = mocker.Mock()
 
     user = User(username="aline", password_hash="stored-hash")
     repository.get_by_username.return_value = user
