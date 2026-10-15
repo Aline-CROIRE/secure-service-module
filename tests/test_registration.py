@@ -2,7 +2,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from secure_service.exceptions import UserAlreadyExistsError, InvalidPasswordError
+from secure_service.exceptions import InvalidPasswordError, UserAlreadyExistsError
 from secure_service.service import UserService
 
 
