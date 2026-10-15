@@ -1,5 +1,7 @@
 """User registration and authentication service."""
 
+import logging
+
 from secure_service.exceptions import (
     InvalidPasswordError,
     UserAlreadyExistsError,
@@ -7,6 +9,8 @@ from secure_service.exceptions import (
 )
 from secure_service.interfaces import PasswordHasher, UserRepository
 from secure_service.models import User
+
+logger = logging.getLogger(__name__)
 
 
 class UserService:
@@ -24,10 +28,12 @@ class UserService:
     def register(self, username: str, password: str) -> User:
         """Register a user after validating the password."""
         if len(password) < 8:
+            logger.warning("Registration rejected: password policy failed.")
             raise InvalidPasswordError("Password must contain at least 8 characters.")
 
         existing_user = self.repository.get_by_username(username)
         if existing_user is not None:
+            logger.warning("Registration rejected: username already exists.")
             raise UserAlreadyExistsError(
                 f"Username '{username}' is already registered."
             )
@@ -37,6 +43,8 @@ class UserService:
             password_hash=self.hasher.hash_password(password),
         )
         self.repository.save(user)
+
+        logger.info("User registration successful.")
         return user
 
     def login(self, username: str, password: str) -> User:
@@ -44,9 +52,12 @@ class UserService:
         user = self.repository.get_by_username(username)
 
         if user is None:
-            raise UserNotFoundError("User was not found.")
+            logger.warning("Login failed: user not found.")
+            raise UserNotFoundError("Invalid username or password.")
 
         if not self.hasher.verify_password(password, user.password_hash):
+            logger.warning("Login failed: password verification failed.")
             raise InvalidPasswordError("Invalid username or password.")
 
+        logger.info("User login successful.")
         return user
